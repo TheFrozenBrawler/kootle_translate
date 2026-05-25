@@ -24,7 +24,7 @@
         /* Stylizacja a'la Google Translate */
         .translate-container {
             display: flex;
-            width: 90%;
+            width: 100%;
             max-width: 1000px;
             background: white;
             border: 1px solid #dadce0;
@@ -32,7 +32,6 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             overflow: hidden;
             align-items: stretch;
-            /* Na desktopie ułożenie poziome (domyślne), na mobile zmienimy to niżej */
         }
 
         .box {
@@ -88,6 +87,7 @@
             resize: none;
             font-size: 18px;
             outline: none;
+            font-family: 'Roboto', Arial, sans-serif;
         }
 
         /* Przyciski akcji */
@@ -134,7 +134,7 @@
             border: 2px solid #333;
             border-radius: 12px;
             padding: 15px;
-            width: min(80%, 320px);
+            width: min(90%, 320px);
             min-height: 96px;
             height: 96px;
             box-sizing: border-box;
@@ -183,51 +183,76 @@
             opacity: 1;
         }
 
-        /* Kontener kota */
+        /* Kontener kota - zachowujemy rozmiar 200x200 na stronie */
         .cat-container {
             width: 200px;
             height: 200px;
             background-image: url('beza_sprite_sheet.png');
-            background-position: 0px 0px; /* Domyślnie Klatka 1 */
+            background-position: 0px 0px; 
             background-repeat: no-repeat;
+            /* SKALOWANIE: Skoro obrazek ma 5 kwadratowych klatek, to przy wysokości 200px, 
+               całkowita szerokość tła musi wynosić dokładnie 5 * 200px = 1000px */
+            background-size: 1000px 200px; 
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
+        /* FAZA MYŚLENIA: Pokazuje klatkę nr 3 (czyli trzeci kwadrat od lewej) */
         .cat-thinking {
             background-position: -400px 0px !important;
         }
 
         .cat-talking {
-            animation: catSpeak 1s steps(1) 3;
+            animation: catSpeak 1.2s steps(1) 3;
         }
 
+        /* Pełna animacja lecąca po kolei przez Twoje gotowe klatki w pliku (1->2->3->2->1) */
         @keyframes catSpeak {
-            0%   { background-position: 0px 0px; }     /* Klatka 1 */
-            25%  { background-position: -200px 0px; } /* Klatka 2 */
-            50%  { background-position: -400px 0px; } /* Klatka 3 */
-            75%  { background-position: -200px 0px; } /* Klatka 2 */
+            0%   { background-position: 0px 0px; }     /* Klatka 1 (bazowa) */
+            20%  { background-position: -200px 0px; }   /* Klatka 2 */
+            40%  { background-position: -400px 0px; }   /* Klatka 3 */
+            60%  { background-position: -600px 0px; }   /* Klatka 2 (powtórzona w pliku) */
+            80%  { background-position: -800px 0px; }   /* Klatka 1 (powtórzona w pliku) */
+            100% { background-position: 0px 0px; }     /* Powrót do początku */
         }
 
-        /* === MEDIA QUERIES DLA URZĄDZEŃ MOBILNYCH === */
-        @media (max-width: 768px) {
+        /* === MEDIA QUERIES DLA URZĄDZEŃ MOBILNYCH (Poprawne stackowanie) === */
+        @media screen and (max-width: 800px) {
+            body {
+                padding: 10px;
+            }
+
             .translate-container {
-                flex-direction: column; /* Ułożenie pionowe na małych ekranach */
+                flex-direction: column; 
             }
 
             .box {
-                height: auto; /* Usunięcie sztywnej wysokości */
-                min-height: 300px; /* Minimalna wysokość, aby zawartość miała oddech */
+                width: 100%;
+                height: auto; 
+                min-height: 280px;
             }
 
             .left-box {
-                border-right: none; /* Usunięcie pionowej linii */
-                border-bottom: 1px solid #dadce0; /* Dodanie poziomej linii oddzielającej */
+                border-right: none;
+                border-bottom: 1px solid #dadce0; 
+            }
+            
+            .right-box {
+                padding-top: 30px; 
+            }
+
+            .cat-buttons {
+                justify-content: center; 
             }
 
             .action-container {
-                margin-top: 20px; /* Dodatkowy odstęp, by przyciski nie przyklejały się do pola tekstowego */
+                margin-top: 20px;
+                justify-content: stretch;
+            }
+
+            .action-container button {
+                flex: 1; 
             }
         }
     </style>
@@ -324,7 +349,6 @@
             catInput.value = "";
             speechBubble.textContent = "Miau?";
             speechBubble.classList.remove('show');
-            // Reset klas kota do stanu początkowego
             catCharacter.className = "cat-container";
         }
 
@@ -337,22 +361,17 @@
                 return;
             }
 
-            // 1. FAZA MYŚLENIA: Ukryj dymek, wyłącz poprzednią animację i ustaw środkową klatkę
             speechBubble.classList.remove('show');
             catCharacter.classList.remove('cat-talking');
             catCharacter.classList.add('cat-thinking');
 
-            // Symulacja czasu myślenia (1000ms = 1 sekunda)
             setTimeout(() => {
-                // 2. KONIEC MYŚLENIA: Usuń sztywną środkową klatkę
                 catCharacter.classList.remove('cat-thinking');
                 
-                // 3. Wstaw tekst i POKAŻ DYMEK
                 const randomText = translations[Math.floor(Math.random() * translations.length)];
                 speechBubble.textContent = randomText;
                 speechBubble.classList.add('show');
                 
-                // 4. URUCHOM ANIMACJĘ dopiero po wyrenderowaniu dymku
                 catCharacter.classList.add('cat-talking');
             }, 1000);
         }
