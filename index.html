@@ -32,6 +32,7 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             overflow: hidden;
             align-items: stretch;
+            /* Na desktopie ułożenie poziome (domyślne), na mobile zmienimy to niżej */
         }
 
         .box {
@@ -194,23 +195,40 @@
             justify-content: center;
         }
 
-        /* STAN 1: Podczas myślenia wyświetla się tylko ŚRODKOWA KLATKA (Klatka 2) */
         .cat-thinking {
             background-position: -400px 0px !important;
         }
 
-        /* STAN 2: Aktywna animacja PO pokazaniu dymku */
-        /* Każdy krok trwa 0.5s. Mamy 4 kroki w sekwencji, więc pełna pętla to 2 sekundy (2s) */
         .cat-talking {
             animation: catSpeak 1s steps(1) 3;
         }
 
-        /* Sekwencja: Klatka 1 (0.5s) -> Klatka 2 (0.5s) -> Klatka 3 (0.5s) -> Klatka 2 (0.5s) */
         @keyframes catSpeak {
             0%   { background-position: 0px 0px; }     /* Klatka 1 */
             25%  { background-position: -200px 0px; } /* Klatka 2 */
             50%  { background-position: -400px 0px; } /* Klatka 3 */
             75%  { background-position: -200px 0px; } /* Klatka 2 */
+        }
+
+        /* === MEDIA QUERIES DLA URZĄDZEŃ MOBILNYCH === */
+        @media (max-width: 768px) {
+            .translate-container {
+                flex-direction: column; /* Ułożenie pionowe na małych ekranach */
+            }
+
+            .box {
+                height: auto; /* Usunięcie sztywnej wysokości */
+                min-height: 300px; /* Minimalna wysokość, aby zawartość miała oddech */
+            }
+
+            .left-box {
+                border-right: none; /* Usunięcie pionowej linii */
+                border-bottom: 1px solid #dadce0; /* Dodanie poziomej linii oddzielającej */
+            }
+
+            .action-container {
+                margin-top: 20px; /* Dodatkowy odstęp, by przyciski nie przyklejały się do pola tekstowego */
+            }
         }
     </style>
 </head>
