@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koci Tłumacz (Google Cat Translate)</title>
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo {
+            width: min(320px, 80vw);
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        /* Stylizacja a'la Google Translate */
+        .translate-container {
+            display: flex;
+            width: 90%;
+            max-width: 1000px;
+            background: white;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+            align-items: stretch;
+        }
+
+        .box {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 420px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .left-box {
+            border-right: 1px solid #dadce0;
+            background-color: #fff;
+        }
+
+        .right-box {
+            background-color: #f8f9fa;
+            position: relative;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        /* Przyciski kocich słów */
+        .cat-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .cat-btn {
+            background-color: #e8f0fe;
+            color: #1a73e8;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .cat-btn:hover {
+            background-color: #d2e3fc;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            border: none;
+            resize: none;
+            font-size: 18px;
+            outline: none;
+        }
+
+        /* Przyciski akcji */
+        .action-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .translate-btn {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .translate-btn:hover {
+            background-color: #1557b0;
+        }
+
+        .clear-btn {
+            background-color: #f1f3f4;
+            color: #3c4043;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .clear-btn:hover {
+            background-color: #e8eaed;
+        }
+
+        /* Dymek komiksowy */
+        .speech-bubble {
+            position: relative;
+            background: #ffffff;
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 15px;
+            width: min(80%, 320px);
+            min-height: 96px;
+            height: 96px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 3px 3px 0px #333;
+            word-break: break-word;
+            line-height: 1.35;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 12px 12px 0;
+            border-style: solid;
+            border-color: #ffffff transparent;
+            display: block;
+            width: 0;
+        }
+
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 13px 13px 0;
+            border-style: solid;
+            border-color: #333 transparent;
+            display: block;
+            width: 0;
+            z-index: -1;
+        }
+
+        .speech-bubble.show {
+            opacity: 1;
+        }
+
+        /* Kontener kota */
+        .cat-container {
+            width: 200px;
+            height: 200px;
+            background-image: url('beza_sprite_sheet.png');
+            background-position: 0px 0px; /* Domyślnie Klatka 1 */
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* STAN 1: Podczas myślenia wyświetla się tylko ŚRODKOWA KLATKA (Klatka 2) */
+        .cat-thinking {
+            background-position: -400px 0px !important;
+        }
+
+        /* STAN 2: Aktywna animacja PO pokazaniu dymku */
+        /* Każdy krok trwa 0.5s. Mamy 4 kroki w sekwencji, więc pełna pętla to 2 sekundy (2s) */
+        .cat-talking {
+            animation: catSpeak 1s steps(1) 3;
+        }
+
+        /* Sekwencja: Klatka 1 (0.5s) -> Klatka 2 (0.5s) -> Klatka 3 (0.5s) -> Klatka 2 (0.5s) */
+        @keyframes catSpeak {
+            0%   { background-position: 0px 0px; }     /* Klatka 1 */
+            25%  { background-position: -200px 0px; } /* Klatka 2 */
+            50%  { background-position: -400px 0px; } /* Klatka 3 */
+            75%  { background-position: -200px 0px; } /* Klatka 2 */
+        }
+    </style>
+</head>
+<body>
+
+    <img class="logo" src="./kootle_translate.png" alt="Kootle Translate">
+
+    <div class="translate-container">
+        <div class="box left-box">
+            <div class="cat-buttons">
+                <button class="cat-btn" onclick="addCatWord('miau')">miau</button>
+                <button class="cat-btn" onclick="addCatWord('mrau')">mrau</button>
+                <button class="cat-btn" onclick="addCatWord('muau')">muau</button>
+                <button class="cat-btn" onclick="addCatWord('mrr')">mrr</button>
+                <button class="cat-btn" onclick="addCatWord('prr')">prr</button>
+                <button class="cat-btn" onclick="addCatWord('wrr')">wrr</button>
+            </div>
+            <textarea id="catInput" placeholder="Koci język..." readonly></textarea>
+            <div class="action-container">
+                <button class="clear-btn" onclick="clearCatInput()">Wyczyść</button>
+                <button class="translate-btn" onclick="translateCat()">Tłumacz</button>
+            </div>
+        </div>
+
+        <div class="box right-box">
+            <div id="speechBubble" class="speech-bubble">Miau?</div>
+            <div id="catCharacter" class="cat-container"></div>
+        </div>
+    </div>
+
+    <script>
+        const translations = [
+            "Twoja poduszka należy teraz do mnie.",
+            "Żenujące.",
+            "DAWAJ SASZETĘ",
+            "Pogłaszcz mnie po brzuszku!",
+            "Maaamoo JEEEEEŚĆĆĆ!",
+            "Pobaw się ze mną.",
+            "Nawet jeśli kupisz mi zabawkę, i tak będę się bawić kłębkiem kurzu.",
+            "O, jakie fajne kartonowe pudełko!",
+            "Chcesz mnie głaskać? To dobrze, bo ja nie chcę.",
+            "Koniec tego. Wstaję i wychodzę na korytarz. Ale wpuść mnie zaraz",
+            "Dawaj jeść człowieku!",
+            "Od 3 minut nie jadłaaam!",
+            "Zrobiłam przemeblowanie. Twoich skarpetek.",
+            "Cały dzień nic tylko praca - leżenie, jedzenie i skakanie po meblach.",
+            "Jestem dzikim kotkiem, upoluję twoją stopę!",
+            "Kot w pierdolcu!",
+            "Kot morderca, nie ma serca!",
+            "SA-SZE-TA! SA-SZE-TA!",
+            "Będę się na ciebie gapić, tak o!",
+            "Pudełka! Kocham kartonowe pudełka!",
+            "Kartoooon!",
+            "Karma 50zł/kg? Dawaj Felixa!",
+            "UUEEGH! mamoposzpszontaj",
+            "Wiesz jak to jest mieć pełną kuwetę? CZY TY TO WIESZ?!",
+            "Faceci? Postrzegam ich gdzieś na poziomie psa. Czyli nisko.",
+            "Zawrzyjmy umowę, jeśli mnie nakarmisz, będziesz mogła mnie też pogłaskać. Deal?",
+            "Kocham cię mamo!",
+            "Jesteś moim ulubionym człowieczkiem",
+            "Smutno mi gdy wychodzisz z domku. Kładę się wtedy na twoim kocyku i myślę o tobie.",
+            "Będę patrzeć jak śpisz",
+            "Gdy będziesz spała, popilnuję cię siedząc na poduszce.",
+            "Kocham cię Gabi!",
+            "Lubię gdy mnie głaszczesz.",
+            "Dobrze że jesteś!",
+            "Dziękuję, że się mną opiekujesz!",
+            "Gdy będziesz pracować, usiądę ci na laptopie.",
+            "Ty i ja, kot i kot!",
+            "Aaa, kotki dwa...",
+            "Nie lubię psów",
+            "Wiem że z wszystkim sobie poradzisz :)",
+            "Kibicuję ci! Ma-ma! Ko-tek!",
+            "Wierzę w ciebie!",
+            "Z wszystkich człowieków wybrałam sobie akurat ciebie",
+            "Lubię gdy mnie głaszczesz.",
+            "Kooochaam cię!"
+        ];
+
+        const catInput = document.getElementById('catInput');
+        const speechBubble = document.getElementById('speechBubble');
+        const catCharacter = document.getElementById('catCharacter');
+
+        function addCatWord(word) {
+            if (catInput.value.length > 0) {
+                catInput.value += " " + word;
+            } else {
+                catInput.value = word;
+            }
+        }
+
+        function clearCatInput() {
+            catInput.value = "";
+            speechBubble.textContent = "Miau?";
+            speechBubble.classList.remove('show');
+            // Reset klas kota do stanu początkowego
+            catCharacter.className = "cat-container";
+        }
+
+        function translateCat() {
+            const text = catInput.value.trim();
+            
+            if (text === "") {
+                speechBubble.textContent = "Najpierw coś powiedz...";
+                speechBubble.classList.add('show');
+                return;
+            }
+
+            // 1. FAZA MYŚLENIA: Ukryj dymek, wyłącz poprzednią animację i ustaw środkową klatkę
+            speechBubble.classList.remove('show');
+            catCharacter.classList.remove('cat-talking');
+            catCharacter.classList.add('cat-thinking');
+
+            // Symulacja czasu myślenia (1000ms = 1 sekunda)
+            setTimeout(() => {
+                // 2. KONIEC MYŚLENIA: Usuń sztywną środkową klatkę
+                catCharacter.classList.remove('cat-thinking');
+                
+                // 3. Wstaw tekst i POKAŻ DYMEK
+                const randomText = translations[Math.floor(Math.random() * translations.length)];
+                speechBubble.textContent = randomText;
+                speechBubble.classList.add('show');
+                
+                // 4. URUCHOM ANIMACJĘ dopiero po wyrenderowaniu dymku
+                catCharacter.classList.add('cat-talking');
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
