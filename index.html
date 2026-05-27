@@ -85,9 +85,11 @@
             height: 120px;
             border: none;
             resize: none;
-            font-size: 18px;
+            font-size: 22px;
             outline: none;
             font-family: 'Roboto', Arial, sans-serif;
+            color: #3c4043;
+            font-weight: bold;
         }
 
         /* Przyciski akcji */
@@ -183,22 +185,19 @@
             opacity: 1;
         }
 
-        /* Kontener kota - zachowujemy rozmiar 200x200 na stronie */
+        /* Kontener kota */
         .cat-container {
             width: 200px;
             height: 200px;
             background-image: url('beza_sprite_sheet.png');
             background-position: 0px 0px; 
             background-repeat: no-repeat;
-            /* SKALOWANIE: Skoro obrazek ma 5 kwadratowych klatek, to przy wysokości 200px, 
-               całkowita szerokość tła musi wynosić dokładnie 5 * 200px = 1000px */
             background-size: 1000px 200px; 
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* FAZA MYŚLENIA: Pokazuje klatkę nr 3 (czyli trzeci kwadrat od lewej) */
         .cat-thinking {
             background-position: -400px 0px !important;
         }
@@ -207,53 +206,85 @@
             animation: catSpeak 1.2s steps(1) 3;
         }
 
-        /* Pełna animacja lecąca po kolei przez Twoje gotowe klatki w pliku (1->2->3->2->1) */
         @keyframes catSpeak {
-            0%   { background-position: 0px 0px; }     /* Klatka 1 (bazowa) */
-            20%  { background-position: -200px 0px; }   /* Klatka 2 */
-            40%  { background-position: -400px 0px; }   /* Klatka 3 */
-            60%  { background-position: -600px 0px; }   /* Klatka 2 (powtórzona w pliku) */
-            80%  { background-position: -800px 0px; }   /* Klatka 1 (powtórzona w pliku) */
-            100% { background-position: 0px 0px; }     /* Powrót do początku */
+            0%   { background-position: 0px 0px; }     
+            20%  { background-position: -200px 0px; }   
+            40%  { background-position: -400px 0px; }   
+            60%  { background-position: -600px 0px; }   
+            80%  { background-position: -800px 0px; }   
+            100% { background-position: 0px 0px; }     
         }
 
-        /* === MEDIA QUERIES DLA URZĄDZEŃ MOBILNYCH (Poprawne stackowanie) === */
+        /* Sekcja odkrytych dymków / słownika pod spodem */
+        .collection-heading {
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #3c4043;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .collection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 16px;
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 60px;
+        }
+
+        .collection-item {
+            background: white;
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 3px 3px 0px #333;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-height: 90px;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .collection-item.locked {
+            background: #e8eaed;
+            border: 2px dashed #9aa0a6;
+            box-shadow: none;
+            color: #80868b;
+            align-items: center;
+            font-style: italic;
+        }
+
+        .collection-item .cat-combination {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #1a73e8;
+            font-weight: bold;
+        }
+
+        .collection-item .translation-val {
+            font-size: 14px;
+            font-weight: bold;
+            color: #202124;
+        }
+
+        /* === MEDIA QUERIES === */
         @media screen and (max-width: 800px) {
-            body {
-                padding: 10px;
-            }
-
-            .translate-container {
-                flex-direction: column; 
-            }
-
-            .box {
-                width: 100%;
-                height: auto; 
-                min-height: 280px;
-            }
-
-            .left-box {
-                border-right: none;
-                border-bottom: 1px solid #dadce0; 
-            }
-            
-            .right-box {
-                padding-top: 30px; 
-            }
-
-            .cat-buttons {
-                justify-content: center; 
-            }
-
-            .action-container {
-                margin-top: 20px;
-                justify-content: stretch;
-            }
-
-            .action-container button {
-                flex: 1; 
-            }
+            body { padding: 10px; }
+            .translate-container { flex-direction: column; }
+            .box { width: 100%; height: auto; min-height: 280px; }
+            .left-box { border-right: none; border-bottom: 1px solid #dadce0; }
+            .right-box { padding-top: 30px; }
+            .cat-buttons { justify-content: center; }
+            .action-container { margin-top: 20px; justify-content: stretch; }
+            .action-container button { flex: 1; }
+            .collection-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
         }
     </style>
 </head>
@@ -265,13 +296,10 @@
         <div class="box left-box">
             <div class="cat-buttons">
                 <button class="cat-btn" onclick="addCatWord('miau')">miau</button>
-                <button class="cat-btn" onclick="addCatWord('mrau')">mrau</button>
-                <button class="cat-btn" onclick="addCatWord('muau')">muau</button>
                 <button class="cat-btn" onclick="addCatWord('mrr')">mrr</button>
                 <button class="cat-btn" onclick="addCatWord('prr')">prr</button>
-                <button class="cat-btn" onclick="addCatWord('wrr')">wrr</button>
             </div>
-            <textarea id="catInput" placeholder="Koci język..." readonly></textarea>
+            <textarea id="catInput" placeholder="Kliknij kocie słowa wyżej (max 3)..." readonly></textarea>
             <div class="action-container">
                 <button class="clear-btn" onclick="clearCatInput()">Wyczyść</button>
                 <button class="translate-btn" onclick="translateCat()">Tłumacz</button>
@@ -284,82 +312,108 @@
         </div>
     </div>
 
+    <div class="collection-heading">
+        <span>Odkryte sekrety kota</span>
+        <span id="discoveryProgress">0 / 39</span>
+    </div>
+    <div id="collectionGrid" class="collection-grid"></div>
+
     <script>
-        const translations = [
-            // "Twoja poduszka należy teraz do mnie.",
-            // "Żenujące.",
-            "DAWAJ SASZETĘ",
-            // "Pogłaszcz mnie po brzuszku!",
-            // "Maaamoo JEEEEEŚĆĆĆ!",
-            // "Pobaw się ze mną.",
-            // "Nawet jeśli kupisz mi zabawkę, i tak będę się bawić kłębkiem kurzu.",
-            // "O, jakie fajne kartonowe pudełko!",
-            // "Chcesz mnie głaskać? To dobrze, bo ja nie chcę.",
-            // "Koniec tego. Wstaję i wychodzę na korytarz. Ale wpuść mnie zaraz",
-            // "Dawaj jeść człowieku!",
-            // "Od 3 minut nie jadłaaam!",
-            // "Zrobiłam przemeblowanie. Twoich skarpetek.",
-            // "Cały dzień nic tylko praca - leżenie, jedzenie i skakanie po meblach.",
-            "Jestem dzikim kotkiem, upoluję Twoją stopę!",
-            // "Kot w pierdolcu!",
-            // "Kot morderca, nie ma serca!",
-            "SA-SZE-TA! SA-SZE-TA!",
-            "Będę się na Ciebie gapić, tak o!",
-            "Pudełka! Kocham kartonowe pudełka!",
-            "Kartoooon!",
-            "Karma 50zł/kg? Dawaj Felixa!",
-            // "UUEEGH! mamoposzpszontaj",
-            // "Wiesz jak to jest mieć pełną kuwetę? CZY TY TO WIESZ?!",
-            "Faceci? Postrzegam ich gdzieś na poziomie psa. Czyli nisko.",
-            // "Zawrzyjmy umowę, jeśli mnie nakarmisz, będziesz mogła mnie też pogłaskać. Deal?",
-            "Kocham Cię mamo!",
-            // "Jesteś moim ulubionym człowieczkiem",
-            "Smutno mi gdy wychodzisz z domku. Kładę się wtedy na Twoim kocyku i myślę o Tobie.",
-            // "Będę patrzeć jak śpisz",
-            "Gdy będziesz spała, popilnuję Cię siedząc na poduszce.",
-            "Kocham Cię Gabi!",
-            // "Lubię gdy mnie głaszczesz.",
-            "Dobrze że jesteś!",
-            "Dziękuję, że się mną opiekujesz!",
-            // "Gdy będziesz pracować, usiądę ci na laptopie.",
-            // "Ty i ja, kot i kot!",
-            // "Aaa, kotki dwa...",
-            "Nie lubię psów",
-            "Wiem że z wszystkim sobie poradzisz :)",
-            "Kibicuję ci! Ma-ma! Ko-tek!",
-            "Wierzę w Ciebie!",
-            // "Z wszystkich człowieków wybrałam sobie akurat Ciebie",
-            "Lubię gdy mnie głaszczesz.",
-            "Kooochaam Cię!",
-            "Lubię polować na myszy! Ale najbardziej te pluszowe.",
-            "Lubię siedzieć na balkonie na Różanej i patrzeć na wszystkich z wysoka.",
-            "Wspinam się na meble żeby patrzeć na wszystkich z góry",
-            "Jestem nieustraszonym kotem! UAAA! Ale tylko gdy Pańcia jest przymnie",
-            "Próbuję uciec z domu, ale na spacerze jestem przerażona...",
-            "Tup, tup.. nadepnęłam Cię? Nie przejmuj się, to specjalnie.",
-            "Gdybym była człowiekiem, zostałabym influencerką.",
-            "Idź pracować na laptopie, żebym mógła na nim usiąść",
-            "Jestem tu, by przegonić wszystkie Twoje kocie smutki :D",
-            "Jesteś moim szczęściem!",
-            "Kocham cię najbardziej na świecie!",
-            "Jesteś takim kimś, kogo chcę widzieć codziennie",
-            "Szukasz mnie? Ja się nie zgubiłam, przecież wiem gdzie jestem",
-            "Wyczeszesz mi futerko?",
-            "Kłaki mojej sierści rozrzucone po mieszkaniu to małe ślady mojej miłości ;) ale posprzątaj je proszę.",
-            "Kocim smutkom mówimy NIE!",
-            "Co ma cztery miękkie łapki i jest przesłoooodkie? Tak! To ja!",
-            "Staraaa! Mam taką plotę! Dzisiaj przez okno widziałam...",
-            "Gość? Do mnie? Pogłaszcz mnie!",
-            "Patrz jakie mam śliczne futerko",
-            "Jeśli masz zły dzień, to znak że moja mama znowu wyciągnęła tarota",
-            "Mój celebrity crush? Kot w butach. Jest taaaki hooot!",
-        ];
+        // Płaskie „drzewo” opcji o skończonej liczbie dokładnie 39 kombinacji (3 + 9 + 27)
+        const translationTree = {
+            // 1 słowo (3 kombinacje)
+            "miau": "Kocham Cię mamo!",
+            "mrr": "Jestem dzikim kotkiem, upoluję Twoją stopę!",
+            "prr": "Dobrze że jesteś!",
+            
+            // 2 słowa (9 kombinacji)
+            "miau miau": "Będę się na Ciebie gapić, tak o!",
+            "miau mrr": "Pudełka! Kocham kartonowe pudełka!",
+            "miau prr": "Kartoooon!",
+            "mrr miau": "Karma 50zł/kg? Dawaj Felixa!",
+            "mrr mrr": "Faceci? Postrzegam ich gdzieś na poziomie psa. Czyli nisko.",
+            "mrr prr": "DAWAJ SASZETE",
+            "prr miau": "Smutno mi gdy wychodzisz z domku. Kładę się wtedy na Twoim kocyku i myślę o Tobie.",
+            "prr mrr": "Gdy będziesz spała, popilnuję Cię siedząc na poduszce.",
+            "prr prr": "Kocham Cię Gabi!",
+
+            // 3 słowa (27 kombinacji)
+            "miau miau miau": "SA-SZE-TA! SA-SZE-TA!",
+            "miau miau mrr": "Dziękuję, że się mną opiekujesz!",
+            "miau miau prr": "Nie lubię psów",
+            "miau mrr miau": "Wiem że z wszystkim sobie poradzisz :)",
+            "miau mrr mrr": "Kibicuję ci! Ma-ma! Ko-tek!",
+            "miau mrr prr": "Wierzę w Ciebie!",
+            "miau prr miau": "Lubię gdy mnie głaszczesz.",
+            "miau prr mrr": "Kooochaam Cię!",
+            "miau prr prr": "Lubię polować na myszy! Ale najbardziej te pluszowe.",
+            "mrr miau miau": "Lubię siedzieć na balkonie na Różanej i patrzeć na wszystkich z wysoka.",
+            "mrr miau mrr": "Wspinam się na meble żeby patrzeć na wszystkich z góry",
+            "mrr miau prr": "Jestem nieustraszonym kotem! UAAA! Ale tylko gdy Pańcia jest przy mnie",
+            "mrr mrr miau": "Próbuję uciec z domu, ale na spacerze jestem przerażona...",
+            "mrr mrr mrr": "Tup, tup.. nadepnęłam Cię? Nie przejmuj się, to specjalnie.",
+            "mrr mrr prr": "Gdybym była człowiekiem, zostałabym influencerką.",
+            "mrr prr miau": "Idź pracować na laptopie, żebym mogła na nim usiąść",
+            "mrr prr mrr": "Jestem tu, by przegonić wszystkie Twoje kocie smutki :D",
+            "mrr prr prr": "Jesteś moim szczęściem!",
+            "prr miau miau": "Kocham cię najbardziej na świecie!",
+            "prr miau mrr": "Jesteś takim kimś, kogo chcę widzieć codziennie",
+            "prr miau prr": "Szukasz mnie? Ja się nie zgubiłam, przecież wiem gdzie jestem",
+            "prr mrr miau": "Wyczeszesz mi futerko?",
+            "prr mrr mrr": "Kłaki mojej sierści rozrzucone po mieszkaniu to małe ślady mojej miłości ;) ale posprzątaj je proszę.",
+            "prr mrr prr": "Kocim smutkom mówimy NIE!",
+            "prr prr miau": "Co ma cztery miękkie łapki i jest przesłoooodkie? Tak! To ja!",
+            "prr prr mrr": "Staraaa! Mam taką plotę! Dzisiaj przez okno widziałam...",
+            "prr prr prr": "Mój celebrity crush? Kot w butach. Jest taaaki hooot!"
+        };
 
         const catInput = document.getElementById('catInput');
         const speechBubble = document.getElementById('speechBubble');
         const catCharacter = document.getElementById('catCharacter');
+        const collectionGrid = document.getElementById('collectionGrid');
+        const discoveryProgress = document.getElementById('discoveryProgress');
+
+        // Funkcja pobierająca listę odkrytych fraz z LocalStorage
+        function getUnlockedPhrases() {
+            const data = localStorage.getItem('unlockedCatPhrases');
+            return data ? JSON.parse(data) : [];
+        }
+
+        // Generowanie siatki pod spodem strony
+        function updateCollectionUI() {
+            collectionGrid.innerHTML = '';
+            const unlockedList = getUnlockedPhrases();
+            let unlockedCount = 0;
+
+            Object.keys(translationTree).forEach(phrase => {
+                const item = document.createElement('div');
+                const isUnlocked = unlockedList.includes(phrase);
+
+                if (isUnlocked) {
+                    item.className = 'collection-item';
+                    item.innerHTML = `
+                        <div class="cat-combination">🐾 ${phrase}</div>
+                        <div class="translation-val">"${translationTree[phrase]}"</div>
+                    `;
+                    unlockedCount++;
+                } else {
+                    item.className = 'collection-item locked';
+                    item.innerHTML = `<span>🔒 ???</span>`;
+                }
+                collectionGrid.appendChild(item);
+            });
+
+            discoveryProgress.textContent = `${unlockedCount} / 39`;
+        }
 
         function addCatWord(word) {
+            const currentVal = catInput.value.trim();
+            // Liczymy aktualną liczbę słów rozbijając string po spacjach
+            const wordCount = currentVal === "" ? 0 : currentVal.split(" ").length;
+
+            // Blokada dodawania, jeśli są już 3 słowa
+            if (wordCount >= 3) return;
+
             if (catInput.value.length > 0) {
                 catInput.value += " " + word;
             } else {
@@ -375,10 +429,10 @@
         }
 
         function translateCat() {
-            const text = catInput.value.trim();
+            const text = catInput.value.trim().toLowerCase();
             
             if (text === "") {
-                speechBubble.textContent = "Najpierw coś powiedz...";
+                speechBubble.textContent = "Najpierw wybierz kocie słowa...";
                 speechBubble.classList.add('show');
                 return;
             }
@@ -390,13 +444,30 @@
             setTimeout(() => {
                 catCharacter.classList.remove('cat-thinking');
                 
-                const randomText = translations[Math.floor(Math.random() * translations.length)];
-                speechBubble.textContent = randomText;
-                speechBubble.classList.add('show');
+                // Pobieramy sztywne tłumaczenie z obiektu struktury
+                const translation = translationTree[text];
+
+                if (translation) {
+                    speechBubble.textContent = translation;
+                    
+                    // Zapisywanie postępu w LocalStorage
+                    let unlockedList = getUnlockedPhrases();
+                    if (!unlockedList.includes(text)) {
+                        unlockedList.push(text);
+                        localStorage.setItem('unlockedCatPhrases', JSON.stringify(unlockedList));
+                        updateCollectionUI(); // Natychmiastowe odświeżenie siatki dymków
+                    }
+                } else {
+                    speechBubble.textContent = "Kot patrzy na Ciebie z dezorientacją...";
+                }
                 
+                speechBubble.classList.add('show');
                 catCharacter.classList.add('cat-talking');
             }, 1000);
         }
+
+        // Inicjalizacja siatki dymków przy załadowaniu strony
+        updateCollectionUI();
     </script>
 </body>
 </html>
